@@ -1,0 +1,31 @@
+{
+    "0": {
+        "Color": "blue",
+        "ID": 0,
+        "ItemID": 1,
+        "ItemName": "shorts",
+        "Quantity": 10,
+        "SalePrice": 1099
+    },
+    "1": {
+        "ID": 1,
+        "ItemID": 1,
+        "ItemName": "shorts",
+        "Quantity": 10,
+        "SalePrice": 1099
+    },
+    "2": {
+        "ID": 2,
+        "ItemID": 1,
+        "ItemName": "shorts",
+        "Quantity": 10,
+        "SalePrice": 1099
+    },
+    "3": {
+        "ID": 3,
+        "ItemID": 1,
+        "ItemName": "shorts",
+        "Quantity": 10,
+        "SalePrice": 1099
+    }
+}
