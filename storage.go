@@ -7,9 +7,9 @@ var (
 )
 
 type Storage interface {
-	Get(objID int64) (any, error)
-	Del(objID int64) error
-	Put(objID int64, obj any) error
-	Lst() ([]any, error)
-	Inc() (int64, error)
+	Get(table string, objID int64) (any, error)
+	Del(table string, objID int64) error
+	Put(table string, objID int64, obj any) error
+	Lst(table string) ([]any, error)
+	Inc(table string) (int64, error)
 }

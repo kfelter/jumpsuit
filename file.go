@@ -7,15 +7,19 @@ import (
 
 type FileStore struct {
 	sync.Mutex
-	Path string
+	BasePath string
 }
 
 func loadf(path string) (*Memory, error) {
-	ms := NewMemoryStore()
 	inf, err := os.Open(path)
+	if os.IsNotExist(err) {
+		inf, err = os.Create(path)
+	}
 	if err != nil {
+
 		return nil, err
 	}
+	ms := NewMemoryStore()
 	if err = ms.Load(inf); err != nil {
 		return nil, err
 	}
@@ -35,10 +39,10 @@ func savef(ms *Memory, path string) error {
 	return outf.Close()
 }
 
-func (f *FileStore) Get(objID int64) (any, error) {
+func (f *FileStore) Get(table string, objID int64) (any, error) {
 	f.Lock()
 	defer f.Unlock()
-	ms, err := loadf(f.Path)
+	ms, err := loadf(f.path(table))
 	if err != nil {
 		return nil, err
 	}
@@ -49,10 +53,10 @@ func (f *FileStore) Get(objID int64) (any, error) {
 	return obj, nil
 }
 
-func (f *FileStore) Del(objID int64) error {
+func (f *FileStore) Del(table string, objID int64) error {
 	f.Lock()
 	defer f.Unlock()
-	ms, err := loadf(f.Path)
+	ms, err := loadf(f.path(table))
 	if err != nil {
 		return err
 	}
@@ -61,13 +65,13 @@ func (f *FileStore) Del(objID int64) error {
 		return err
 	}
 
-	return savef(ms, f.Path)
+	return savef(ms, f.path(table))
 }
 
-func (f *FileStore) Put(objID int64, obj any) error {
+func (f *FileStore) Put(table string, objID int64, obj any) error {
 	f.Lock()
 	defer f.Unlock()
-	ms, err := loadf(f.Path)
+	ms, err := loadf(f.path(table))
 	if err != nil {
 		return err
 	}
@@ -76,25 +80,29 @@ func (f *FileStore) Put(objID int64, obj any) error {
 		return err
 	}
 
-	return savef(ms, f.Path)
+	return savef(ms, f.path(table))
 }
 
-func (f *FileStore) Lst() ([]any, error) {
+func (f *FileStore) Lst(table string) ([]any, error) {
 	f.Lock()
 	defer f.Unlock()
-	ms, err := loadf(f.Path)
+	ms, err := loadf(f.path(table))
 	if err != nil {
 		return nil, err
 	}
 	return ms.Lst()
 }
 
-func (f *FileStore) Inc() (int64, error) {
+func (f *FileStore) Inc(table string) (int64, error) {
 	f.Lock()
 	defer f.Unlock()
-	ms, err := loadf(f.Path)
+	ms, err := loadf(f.path(table))
 	if err != nil {
 		return 0, err
 	}
 	return ms.Inc(), nil
+}
+
+func (f *FileStore) path(table string) string {
+	return f.BasePath + "/" + table + ".json"
 }
