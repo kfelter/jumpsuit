@@ -20,15 +20,15 @@ type Item struct {
 
 func main() {
 	fstore := jumpsuit.NewFileStore("data")
-	fstore.Put("orders", 0, Order{
-		ID:       0,
+	fstore.Put("orders", &Order{
+		ID:       -1,
 		ItemID:   0,
 		Quantity: 1,
 		Total:    1099 * 1,
 	})
 
-	fstore.Put("items", 0, Item{
-		ID:    0,
+	fstore.Put("items", &Item{
+		ID:    -1,
 		Name:  "shorts",
 		Price: 1099,
 		Color: "blue",

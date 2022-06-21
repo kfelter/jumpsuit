@@ -68,7 +68,6 @@ func (s *Server) basePath(table string) echo.HandlerFunc {
 		fmt.Println(string(b))
 		switch c.Request().Method {
 		case http.MethodGet:
-			fmt.Println("getting")
 			return s.Lst(table, c)
 		case http.MethodPut:
 			return s.Put(table, c)
@@ -80,12 +79,10 @@ func (s *Server) basePath(table string) echo.HandlerFunc {
 func (s *Server) Lst(table string, c echo.Context) error {
 	lst, err := s.Storage.Lst(table)
 	if err != nil {
-		fmt.Println("1", err)
 		return err
 	}
 	raw, err := json.Marshal(lst)
 	if err != nil {
-		fmt.Println("2", err)
 		return err
 	}
 	return c.Blob(200, echo.MIMEApplicationJSON, raw)
@@ -157,11 +154,7 @@ func (s *Server) Put(table string, c echo.Context) error {
 	)
 
 	if idParam == "" {
-		id, err = s.Storage.Inc(table)
-		if err != nil {
-			return err
-		}
-		(*obj)["ID"] = id
+		(*obj)["ID"] = -1
 	} else {
 		id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 		if err != nil {
@@ -176,7 +169,7 @@ func (s *Server) Put(table string, c echo.Context) error {
 		}
 	}
 
-	err = s.Storage.Put(table, id, obj)
+	err = s.Storage.Put(table, obj)
 	if err != nil {
 		return err
 	}

@@ -2,6 +2,7 @@ package jumpsuit
 
 import (
 	"os"
+	"reflect"
 	"sync"
 )
 
@@ -68,7 +69,7 @@ func (f *FileStore) Del(table string, objID int64) error {
 	return savef(ms, f.path(table))
 }
 
-func (f *FileStore) Put(table string, objID int64, obj any) error {
+func (f *FileStore) Put(table string, obj any) error {
 	f.Lock()
 	defer f.Unlock()
 	ms, err := loadf(f.path(table))
@@ -76,7 +77,13 @@ func (f *FileStore) Put(table string, objID int64, obj any) error {
 		return err
 	}
 
-	if err = ms.Put(objID, obj); err != nil {
+	id := reflect.ValueOf(obj).Elem().FieldByName("ID").Int()
+	if id < 0 {
+		id = ms.Inc()
+		reflect.ValueOf(obj).Elem().FieldByName("ID").SetInt(id)
+	}
+
+	if err = ms.Put(id, obj); err != nil {
 		return err
 	}
 
